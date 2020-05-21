@@ -1,9 +1,0 @@
-extends layout
-
-block content
-  h1= title
-  form(action='/users', method='POST')
-      input(type='text', placeholder='name', name='first_name')
-      input(type='text', placeholder='surname', name='last_name')
-      input(type='text', placeholder='importance', name='importance')
-      button(type='submit') Submit
