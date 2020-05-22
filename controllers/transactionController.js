@@ -1,24 +1,16 @@
 const Transaction = require("../models/Transaction");
 
-const renderTransactionForm = (req, res) => {
-  res.render("addTransaction", {
-    title: "Add Transaction For User",
-    userId: req.params.userId,
+exports.transactionForm = (req, res) => {
+  res.render("transaction", {
+    title: "Send Virtual Coins",
   });
 };
 
-const insertUserTransaction = async (req, res) => {
-  console.log(req.params.userId);
-  let newTransaction = new Transaction({
+exports.insertUserTransaction = async (req, res) => {
+  const newTransaction = new Transaction({
     ...req.body,
-    user: req.params.userId,
+    user: req.user._id,
   });
-  console.log(newTransaction);
-  let insertedTransaction = await newTransaction.save();
+  const insertedTransaction = await newTransaction.save();
   res.json(insertedTransaction);
-};
-
-module.exports = {
-  renderTransactionForm,
-  insertUserTransaction,
 };

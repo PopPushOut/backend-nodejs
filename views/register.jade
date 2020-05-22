@@ -2,14 +2,24 @@ extends layout
 
 block content
   .inner
-    form.form(action='/register', method='POST')
+    form.form(action='/register', method='POST' id="register")
       h2= title
       label(for="name") Name
-      input(type='text', name='name' required)
+      input(type='text', name='name' value=`${body.email || ''}` required)
       label(for="email") Email
-      input(type='email', name='email' required)
+      input(type='email', name='email' value=`${body.email || ''}` required)
       label(for="password") Password
       input(type='password', name='password')
       label(for="password-confirm") Confirm Password
       input(type='password', name='password-confirm')
+      label(for="nationality") Nationality
+      select(name="nationality" form="register")
+        each country in locals.h.countryList
+          option(value=`${country.code}`) #{country.name}
+      label(for="account_country") Account Country
+      select(name="account_country" form="register")
+        each country in locals.h.countryList
+          option(value=`${country.code}`) #{country.name}
       input.button(type='submit' value="Register →")
+
+      

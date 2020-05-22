@@ -1,9 +1,0 @@
-extends layout
-
-block content
-  h1= title
-  form(action='/transactions/#{userId}', method='POST')
-      input(type='text', placeholder='sender', name='sender')
-      input(type='text', placeholder='receiver', name='receiver')
-      input(type='text', placeholder='transfer_amount', name='transfer_amount')
-      button(type='submit') Submit

@@ -5,7 +5,7 @@ block content
     form.form(action='/login', method='POST')
       h2= title
       label(for="email") Email
-      input(type='email', name='email')
+      input(type='email', name='email' value=`${body.email || ''}`)
       label(for="password") Password
       input(type='password', name='password')
       input.button(type='submit' value="Log in →")

@@ -13,6 +13,10 @@ html
               each category in categories
                 each message in flashes[category]
                   .flash(class=`flash--${category}`)
+                    
                     p.flash__text!= message
+                      if(clipboardText)
+                        textarea(readonly) #{clipboardText}
                     button.flash__remove(onClick="this.parentElement.remove()") &times;
+                    
     block content

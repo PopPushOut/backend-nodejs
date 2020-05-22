@@ -559,7 +559,7 @@ p {
   font-size: 10rem;
   text-align: center; }
 
-input, textarea {
+input, textarea, select {
   width: 100%;
   margin-top: 15px;
   padding: 10px;

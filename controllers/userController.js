@@ -1,27 +1,28 @@
 const User = require("../models/User");
 const { body, check, validationResult } = require("express-validator");
 
-exports.registerForm = (req, res) => {
-  res.render("register", { title: "Register" });
-};
-exports.register = async (req, res, next) => {
-  const user = new User({
-    email: req.body.email,
-    name: req.body.name,
-    importance: 5,
-  });
-  let insertedUser = await User.register(user, req.body.password);
-  res.json(insertedUser);
-  //next();
-};
-exports.loginForm = (req, res) => {
-  res.render("login", { title: "Login" });
+exports.registerFormValidators = () => {
+  return [
+    body("name", "You must provide a name!").not().isEmpty(),
+    body("email", "That Email is not valid").isEmail().normalizeEmail({
+      gmail_remove_dots: false,
+      remove_extension: false,
+      gmail_remove_subaddress: false,
+    }),
+    body("password", "Password Cannot be empty!").not().isEmpty(),
+    body("password-confirm", "Confirmed Password cannot be blank")
+      .not()
+      .isEmpty(),
+    check("password-confirm", "Oops! Your passwords do not match").custom(
+      (value, { req }) => value === req.body.password
+    ),
+  ];
 };
 
-exports.sanitizers = () => {
-  return [];
+exports.registerForm = (req, res) => {
+  res.render("register", { title: "Register", body: "" });
 };
-exports.validateRegister = (req, res, next) => {
+exports.register = async (req, res, next) => {
   // little bit of error handling
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -32,19 +33,28 @@ exports.validateRegister = (req, res, next) => {
     res.render("register", {
       title: "Register",
       flashes: req.flash(),
+      body: req.body,
     });
     return;
   }
+  const user = new User({
+    ...req.body,
+    importance: 5,
+  });
+  let insertedUser = await User.register(user, req.body.password);
   next();
 };
+exports.login = (req, res) => {
+  res.render("login", { title: "Login", body: "" });
+};
+
 exports.getUserById = async (req, res) => {
   let foundUser = await User.findById(req.params.userId);
   res.json(foundUser);
 };
 
 exports.getUserTransactions = async (req, res) => {
-  let userTransactions = await User.findById(req.params.userId).populate(
-    "transactions"
-  );
-  res.json(userTransactions);
+  console.log(req.user._id);
+  let user = await User.findById(req.user._id).populate("transactions");
+  res.json(user.transactions);
 };
