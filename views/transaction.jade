@@ -2,10 +2,8 @@ extends layout
 
 block content
   .inner
-    form.form(action='/transaction/', method='POST')
+    form.form(action='/transactions', method='POST')
       h2= title
-      label(for="sender") Sender
-      input(type='text', name='sender' required)
       label(for="receiver") Receiver
       input(type='text', name='receiver' required)
       label(for="transfer_amount") Transfer Amount

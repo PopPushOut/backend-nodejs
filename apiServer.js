@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const express = require("express");
 const createError = require("http-errors");
 const path = require("path");
-const cookieParser = require("cookie-parser");
+const MongoQS = require("mongo-querystring");
 const logger = require("morgan");
 const session = require("express-session");
 const flash = require("connect-flash");
@@ -23,9 +23,13 @@ app.set("view engine", "jade");
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(
-  session({ secret: "very_secret", resave: false, saveUninitialized: false })
+  session({
+    secret: "very_secret",
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: true },
+  })
 );
 app.use(flash());
 app.use(passport.initialize());
@@ -34,6 +38,8 @@ app.use(express.static(path.join(__dirname, "public")));
 // pass variables to our templates + all requests
 app.use((req, res, next) => {
   res.locals.h = utils;
+  res.locals.qs = MongoQS;
+  res.locals.createError = createError;
   next();
 });
 

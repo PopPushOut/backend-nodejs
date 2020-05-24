@@ -6,9 +6,9 @@ const User = require("../models/User");
 
 passport.use(User.createStrategy());
 
-// use static serialize and deserialize of model for passport session support ??
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+// not using persistent login/logout sessions, no user data will be saved
+//passport.serializeUser(User.serializeUser());
+//passport.deserializeUser(User.deserializeUser());
 
 const opts = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
