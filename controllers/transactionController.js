@@ -79,7 +79,20 @@ exports.deleteUserTransaction = async (req, res) => {
   res.json(transaction);
 };
 
-exports.getTransactions = async (req, res) => {
-  const result = await Transaction.getTransactionIds("domestic");
-  res.json(result);
+exports.getTransactions = async (req, res, next) => {
+  const transactionIdsToUpdate = await Transaction.getTransactionIds(
+    "domestic",
+    "high"
+  );
+  if (transactionIdsToUpdate.length === 0) {
+    return next(res.locals.createError(400));
+  }
+  const result = await Transaction.updateMany(
+    { _id: { $in: transactionIdsToUpdate[0].array } },
+    { $set: { state: "Completed" } }
+  );
+  console.log(
+    `num of docs matched ${result.n}, num of docs updated ${result.nModified}`
+  );
+  res.json(transactionIdsToUpdate);
 };

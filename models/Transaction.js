@@ -19,7 +19,7 @@ let transactionSchema = new Schema(
     },
     state: {
       type: String,
-      enum: ["New", "Cancelled", "Completed"],
+      enum: ["New", "Completed"],
       default: "New",
     },
   },
@@ -28,15 +28,20 @@ let transactionSchema = new Schema(
   }
 );
 
-transactionSchema.statics.getTransactionIds = function (key) {
-  // type[key] is later used in $in expression to match transactions
-  // [0] - after $cmp accounts are equal, e.g LT->LT or EN->EN
-  // [1,-1] - after $cmp accounts are different, e.g EN->LT or DE->EN
+transactionSchema.statics.getTransactionIds = function (typeKey, priorityKey) {
+  // type[typeKey] is used to compare whether account is domestic or international
+  // [0] - we expect domestic transaction as sender and receiver account_country is same, e.g LT->LT or EN->EN
+  // [1,-1] - we expect international transaction as sender and receiver account_country is different, e.g EN->LT or DE->EN
   const type = {
     international: [-1, 1],
     domestic: [0],
   };
-  console.log(type[key]);
+
+  // map sender importance with priority, e.g user with importance = 6, has low priority
+  const priority = {
+    high: [0, 1, 2, 3, 4, 5],
+    low: [6, 7, 8, 9, 10],
+  };
   return this.aggregate([
     {
       $match: {
@@ -51,6 +56,7 @@ transactionSchema.statics.getTransactionIds = function (key) {
         as: "sender_object",
       },
     },
+
     {
       $lookup: {
         from: "users",
@@ -67,9 +73,17 @@ transactionSchema.statics.getTransactionIds = function (key) {
             "$sender_object.account_country",
           ],
         },
+        priority: "$sender_object.importance",
       },
     },
-    { $match: { domestic: { $in: type[key] } } },
+    {
+      $match: {
+        $and: [
+          { domestic: { $in: type[typeKey] } },
+          { priority: { $in: priority[priorityKey] } },
+        ],
+      },
+    },
     {
       $group: { _id: null, array: { $push: "$_id" } },
     },
@@ -78,5 +92,12 @@ transactionSchema.statics.getTransactionIds = function (key) {
     },
   ]);
 };
-
+transactionSchema.statics.processMultipleTransactions = function (
+  transactionIdsArray
+) {
+  return this.updateMany(
+    { _id: { $in: transactionIdsArray } },
+    { $set: { state: "Completed" } }
+  );
+};
 module.exports = mongoose.model("Transaction", transactionSchema);

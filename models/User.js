@@ -43,4 +43,5 @@ userSchema.virtual("transactions", {
   localField: "_id",
   foreignField: "user",
 });
+
 module.exports = mongoose.model("User", userSchema);

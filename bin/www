@@ -4,6 +4,7 @@
  * Module dependencies.
  */
 const fs = require("fs");
+const path = require("path");
 const app = require("../apiServer");
 const debug = require("debug")("backend-nodejs:server");
 const https = require("https");
@@ -20,8 +21,8 @@ app.set("port", port);
 
 const server = https.createServer(
   {
-    key: fs.readFileSync("C:/Users/aivar/.certs/server.key"),
-    cert: fs.readFileSync("C:/Users/aivar/.certs/server.cert"),
+    key: fs.readFileSync(path.resolve(__dirname, "../certs/server.key")),
+    cert: fs.readFileSync(path.resolve(__dirname, "../certs/server.cert")),
   },
   app
 );

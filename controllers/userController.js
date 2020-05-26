@@ -40,7 +40,7 @@ exports.register = async (req, res, next) => {
   }
   const user = new User({
     ...req.body,
-    importance: 5,
+    importance: Math.floor(Math.random() * 11),
   });
   await User.register(user, req.body.password);
   next();
