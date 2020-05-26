@@ -28,7 +28,6 @@ let userSchema = new Schema(
       type: String,
       required: "Please Select your account country",
     },
-    date: { type: Date, default: Date.now },
     importance: { type: Number, min: 0, max: 10, required: true },
   },
   {
@@ -44,5 +43,4 @@ userSchema.virtual("transactions", {
   localField: "_id",
   foreignField: "user",
 });
-
 module.exports = mongoose.model("User", userSchema);

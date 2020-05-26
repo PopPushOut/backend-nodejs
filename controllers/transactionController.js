@@ -1,22 +1,50 @@
 const Transaction = require("../models/Transaction");
+const User = require("../models/User");
 
 exports.transactionForm = (req, res) => {
   res.render("transaction", {
     title: "Send Virtual Coins",
   });
 };
-
 exports.getUserTransaction = async (req, res) => {
   const transaction = await Transaction.findById(req.params.transactionId);
   res.json(transaction);
 };
+exports.getUserTransactions = async (req, res, next) => {
+  let query = {};
+  if (Object.keys(req.query).length > 0) {
+    const {
+      created_after,
+      created_before,
+      created_between,
+      ...rest_query
+    } = req.query;
+    let qs = new res.locals.qs();
+    if (created_between) {
+      qs.customBetween("created")(query, created_between);
+    } else if (created_after) {
+      qs.customAfter("created")(query, created_after);
+    } else if (created_before) {
+      qs.customBefore("created")(query, created_before);
+    }
+    Object.assign(query, qs.parse(rest_query));
+  }
+
+  let user = await User.findById(req.user._id).populate({
+    path: "transactions",
+    match: query,
+  });
+  res.json(user.transactions);
+};
+
 exports.updateUserTransaction = async (req, res) => {
-  console.log("UPDATE" + req.params.transactionId);
+  if (req.body.receiver) {
+    await User.findById(req.body.receiver);
+  }
   const updatedTransaction = await Transaction.findOneAndUpdate(
-    { _id: req.params.transactionId },
+    { _id: req.params.transactionId, state: { $in: ["New"] } },
     {
-      transfer_amount: req.body.transfer_amount,
-      receiver: req.body.receiver,
+      ...req.body,
     },
     {
       new: true,
@@ -24,19 +52,34 @@ exports.updateUserTransaction = async (req, res) => {
   );
   res.json(updatedTransaction);
 };
-exports.insertUserTransactions = async (req, res) => {
+exports.insertUserTransactions = async (req, res, next) => {
   let transactions = req.body;
+  if (typeof req.body === "object" && !req.body.length) {
+    transactions = [req.body];
+  }
   if (transactions.length > 0) {
-    transactions.map((t) => (t.user = req.user._id));
+    for (let i = 0; i < transactions.length; i++) {
+      const transaction = transactions[i];
+      let found = await User.findById(transaction.receiver);
+      if (!found) {
+        return next(res.locals.createError(400));
+      }
+      transactions[i] = { ...transaction, sender: req.user._id };
+    }
   }
   const insertedTransactions = await Transaction.insertMany(transactions);
   res.json(insertedTransactions);
 };
-// exports.insertUserTransaction = async (req, res) => {
-//   const newTransaction = new Transaction({
-//     ...req.body,
-//     user: req.user._id,
-//   });
-//   const insertedTransaction = await newTransaction.save();
-//   res.json(insertedTransaction);
-// };
+
+exports.deleteUserTransaction = async (req, res) => {
+  const transaction = await Transaction.findOneAndDelete({
+    _id: req.params.transactionId,
+    state: { $in: ["New"] },
+  });
+  res.json(transaction);
+};
+
+exports.getTransactions = async (req, res) => {
+  const result = await Transaction.getTransactionIds("domestic");
+  res.json(result);
+};

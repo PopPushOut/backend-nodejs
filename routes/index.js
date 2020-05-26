@@ -24,7 +24,7 @@ router.get("/transaction", transactionController.transactionForm);
 router.get(
   "/transactions",
   authController.jwtAuth,
-  catchErrors(userController.getUserTransactions)
+  catchErrors(transactionController.getUserTransactions)
 );
 router.get(
   "/transactions/:transactionId",
@@ -42,14 +42,10 @@ router.put(
   catchErrors(transactionController.updateUserTransaction)
 );
 router.delete(
-  "/users/:userId/transactions/:transactionId",
-  authController.jwtAuth
-  // delete single transaction
+  "/transactions/:transactionId",
+  authController.jwtAuth,
+  catchErrors(transactionController.deleteUserTransaction)
 );
-router.delete(
-  "/users/:userId/transactions/:transactionIds",
-  authController.jwtAuth
-  // delete multiple transactions
-);
+router.get("/test", catchErrors(transactionController.getTransactions));
 
 module.exports = router;

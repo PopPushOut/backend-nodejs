@@ -7,14 +7,14 @@ const logger = require("morgan");
 const session = require("express-session");
 const flash = require("connect-flash");
 const passport = require("passport");
+
+const { connectionString } = require("./config");
 const routes = require("./routes/index");
 const utils = require("./utils");
-require("./auth/passport");
+require("./passport");
+require("./jobs/agenda");
 
-const connectionString =
-  "mongodb+srv://dummy:ngSckQNcQlcKYrvB@cluster0-koonn.mongodb.net/very-cool-db?retryWrites=true&w=majority";
-
-var app = express();
+const app = express();
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -49,7 +49,20 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => {
+  .then((db) => {
+    //console.log(db);
+
+    // agenda.on("ready", function () {
+    //   console.log("ready");
+    // });
+
+    // agenda.mongo(mongoose.connection.collection("jobs"), "jobs", function (
+    //   err
+    // ) {
+    //   console.log("heee");
+    // });
+    //agenda.mongo(mongoose.connection.collection("jobs"), "jobs");
+
     console.log("Connected to Database");
 
     app.use("/", routes);

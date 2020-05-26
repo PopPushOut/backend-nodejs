@@ -42,41 +42,9 @@ exports.register = async (req, res, next) => {
     ...req.body,
     importance: 5,
   });
-  let insertedUser = await User.register(user, req.body.password);
+  await User.register(user, req.body.password);
   next();
 };
 exports.login = (req, res) => {
   res.render("login", { title: "Login", body: "" });
-};
-
-exports.getUserById = async (req, res) => {
-  let foundUser = await User.findById(req.params.userId);
-  res.json(foundUser);
-};
-
-exports.getUserTransactions = async (req, res, next) => {
-  let query = {};
-  if (Object.keys(req.query).length > 0) {
-    const {
-      created_after,
-      created_before,
-      created_between,
-      ...rest_query
-    } = req.query;
-    let qs = new res.locals.qs();
-    if (created_between) {
-      qs.customBetween("created")(query, created_between);
-    } else if (created_after) {
-      qs.customAfter("created")(query, created_after);
-    } else if (created_before) {
-      qs.customBefore("created")(query, created_before);
-    }
-    Object.assign(query, qs.parse(rest_query));
-  }
-
-  let user = await User.findById(req.user._id).populate({
-    path: "transactions",
-    match: query,
-  });
-  res.json(user.transactions);
 };
