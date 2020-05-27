@@ -29,7 +29,6 @@ exports.getUserTransactions = async (req, res, next) => {
     }
     Object.assign(query, qs.parse(rest_query));
   }
-
   let user = await User.findById(req.user._id).populate({
     path: "transactions",
     match: query,
@@ -42,7 +41,11 @@ exports.updateUserTransaction = async (req, res) => {
     await User.findById(req.body.receiver);
   }
   const updatedTransaction = await Transaction.findOneAndUpdate(
-    { _id: req.params.transactionId, state: { $in: ["New"] } },
+    {
+      _id: req.params.transactionId,
+      sender: req.user._id,
+      state: { $in: ["Pending"] },
+    },
     {
       ...req.body,
     },
@@ -53,6 +56,8 @@ exports.updateUserTransaction = async (req, res) => {
   res.json(updatedTransaction);
 };
 exports.insertUserTransactions = async (req, res, next) => {
+  const regex = /^\d+(?:\.\d{0,2})$/; // to validate price format
+
   let transactions = req.body;
   if (typeof req.body === "object" && !req.body.length) {
     transactions = [req.body];
@@ -61,7 +66,8 @@ exports.insertUserTransactions = async (req, res, next) => {
     for (let i = 0; i < transactions.length; i++) {
       const transaction = transactions[i];
       let found = await User.findById(transaction.receiver);
-      if (!found) {
+
+      if (!found || !regex.test(transaction.transfer_amount)) {
         return next(res.locals.createError(400));
       }
       transactions[i] = { ...transaction, sender: req.user._id };
@@ -74,7 +80,8 @@ exports.insertUserTransactions = async (req, res, next) => {
 exports.deleteUserTransaction = async (req, res) => {
   const transaction = await Transaction.findOneAndDelete({
     _id: req.params.transactionId,
-    state: { $in: ["New"] },
+    sender: req.user._id,
+    state: { $in: ["Pending"] },
   });
   res.json(transaction);
 };
@@ -90,9 +97,6 @@ exports.getTransactions = async (req, res, next) => {
   const result = await Transaction.updateMany(
     { _id: { $in: transactionIdsToUpdate[0].array } },
     { $set: { state: "Completed" } }
-  );
-  console.log(
-    `num of docs matched ${result.n}, num of docs updated ${result.nModified}`
   );
   res.json(transactionIdsToUpdate);
 };

@@ -10,6 +10,12 @@ let transactionSchema = new Schema(
     },
     transfer_amount: {
       type: Number,
+      validate: {
+        validator: function (v) {
+          return v > 0;
+        },
+        message: "Transaction amount should be greater than 0",
+      },
       required: "Please put the amount you are sending",
     },
     sender: {
@@ -19,8 +25,8 @@ let transactionSchema = new Schema(
     },
     state: {
       type: String,
-      enum: ["New", "Completed"],
-      default: "New",
+      enum: ["Pending", "Completed"],
+      default: "Pending",
     },
   },
   {
@@ -45,7 +51,7 @@ transactionSchema.statics.getTransactionIds = function (typeKey, priorityKey) {
   return this.aggregate([
     {
       $match: {
-        state: "New",
+        state: "Pending",
       },
     },
     {

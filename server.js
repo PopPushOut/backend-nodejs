@@ -50,19 +50,6 @@ mongoose
     useUnifiedTopology: true,
   })
   .then((db) => {
-    //console.log(db);
-
-    // agenda.on("ready", function () {
-    //   console.log("ready");
-    // });
-
-    // agenda.mongo(mongoose.connection.collection("jobs"), "jobs", function (
-    //   err
-    // ) {
-    //   console.log("heee");
-    // });
-    //agenda.mongo(mongoose.connection.collection("jobs"), "jobs");
-
     console.log("Connected to Database");
 
     app.use("/", routes);

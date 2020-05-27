@@ -24,14 +24,10 @@ agenda.define(
       "high"
     );
     if (transactionIdsToUpdate.length === 0) {
-      //nothing to update
       return;
     }
-    const result = await Transaction.processMultipleTransactions(
+    await Transaction.processMultipleTransactions(
       transactionIdsToUpdate[0].array
-    );
-    console.log(
-      `num of docs matched ${result.n}, num of docs updated ${result.nModified}`
     );
   }
 );
@@ -44,10 +40,9 @@ agenda.define(
       "high"
     );
     if (transactionIdsToUpdate.length === 0) {
-      //nothing to update
       return;
     }
-    const result = await Transaction.processMultipleTransactions(
+    await Transaction.processMultipleTransactions(
       transactionIdsToUpdate[0].array
     );
   }
@@ -61,10 +56,9 @@ agenda.define(
       "low"
     );
     if (transactionIdsToUpdate.length === 0) {
-      //nothing to update
       return;
     }
-    const result = await Transaction.processMultipleTransactions(
+    await Transaction.processMultipleTransactions(
       transactionIdsToUpdate[0].array
     );
   }
@@ -78,10 +72,9 @@ agenda.define(
       "low"
     );
     if (transactionIdsToUpdate.length === 0) {
-      //nothing to update
       return;
     }
-    const result = await Transaction.processMultipleTransactions(
+    await Transaction.processMultipleTransactions(
       transactionIdsToUpdate[0].array
     );
   }

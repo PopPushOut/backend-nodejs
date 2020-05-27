@@ -46,6 +46,5 @@ router.delete(
   authController.jwtAuth,
   catchErrors(transactionController.deleteUserTransaction)
 );
-router.get("/test", catchErrors(transactionController.getTransactions));
 
 module.exports = router;

@@ -5,7 +5,7 @@
  */
 const fs = require("fs");
 const path = require("path");
-const app = require("../apiServer");
+const app = require("../server");
 const debug = require("debug")("backend-nodejs:server");
 const https = require("https");
 /**

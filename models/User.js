@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-//const md5 = require("md5");
 const validator = require("validator");
 const passportLocalMongoose = require("passport-local-mongoose");
 const mongodbErrorHandler = require("mongoose-mongodb-errors");
@@ -41,7 +40,7 @@ userSchema.plugin(mongodbErrorHandler);
 userSchema.virtual("transactions", {
   ref: "Transaction",
   localField: "_id",
-  foreignField: "user",
+  foreignField: "sender",
 });
 
 module.exports = mongoose.model("User", userSchema);
