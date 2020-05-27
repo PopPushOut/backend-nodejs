@@ -6,8 +6,13 @@ exports.transactionForm = (req, res) => {
     title: "Send Virtual Coins",
   });
 };
-exports.getUserTransaction = async (req, res) => {
+exports.getUserTransaction = async (req, res, next) => {
   const transaction = await Transaction.findById(req.params.transactionId);
+  if (!transaction) {
+    return next(
+      res.locals.createError(404, "No user transaction with given ID found!")
+    );
+  }
   res.json(transaction);
 };
 exports.getUserTransactions = async (req, res, next) => {
@@ -29,14 +34,19 @@ exports.getUserTransactions = async (req, res, next) => {
     }
     Object.assign(query, qs.parse(rest_query));
   }
-  let user = await User.findById(req.user._id).populate({
+  const user = await User.findById(req.user._id).populate({
     path: "transactions",
     match: query,
   });
+  if (!user.transactions.length) {
+    return next(
+      res.locals.createError(404, "No transactions with associated user found!")
+    );
+  }
   res.json(user.transactions);
 };
 
-exports.updateUserTransaction = async (req, res) => {
+exports.updateUserTransaction = async (req, res, next) => {
   if (req.body.receiver) {
     await User.findById(req.body.receiver);
   }
@@ -53,6 +63,14 @@ exports.updateUserTransaction = async (req, res) => {
       new: true,
     }
   );
+  if (!updatedTransaction) {
+    return next(
+      res.locals.createError(
+        404,
+        "Nothing was updated, values of item in db could be the same!"
+      )
+    );
+  }
   res.json(updatedTransaction);
 };
 exports.insertUserTransactions = async (req, res, next) => {
@@ -77,26 +95,19 @@ exports.insertUserTransactions = async (req, res, next) => {
   res.json(insertedTransactions);
 };
 
-exports.deleteUserTransaction = async (req, res) => {
+exports.deleteUserTransaction = async (req, res, next) => {
   const transaction = await Transaction.findOneAndDelete({
     _id: req.params.transactionId,
     sender: req.user._id,
     state: { $in: ["Pending"] },
   });
-  res.json(transaction);
-};
-
-exports.getTransactions = async (req, res, next) => {
-  const transactionIdsToUpdate = await Transaction.getTransactionIds(
-    "domestic",
-    "high"
-  );
-  if (transactionIdsToUpdate.length === 0) {
-    return next(res.locals.createError(400));
+  if (!transaction) {
+    return next(
+      res.locals.createError(
+        404,
+        "Nothing was deleted, check if the item you are trying to delete exists!"
+      )
+    );
   }
-  const result = await Transaction.updateMany(
-    { _id: { $in: transactionIdsToUpdate[0].array } },
-    { $set: { state: "Completed" } }
-  );
-  res.json(transactionIdsToUpdate);
+  res.json(transaction);
 };
