@@ -3,17 +3,16 @@
 [Link to API documentation generated using Postman][1]
 
 # how to start (2 ways)
-Steps to run without Docker
-
-Install Node.js runtime, can be downloaded from https://nodejs.org/en/download/
-
+**method 1**
+*prerequisites: Node.js(version 10.x or higher recommended) installed*
+Steps to run:
 1. Navigate to the root of the project
 2. Run "npm install"
 3. Run "npm start"
 
-Node.js server will start on https://localhost:3000/
-
-Step to run with Docker
+**method 2**
+*prerequisites: Docker installed*
+Steps to run:
 1. Navigate to the root of the project
 2. Run "docker-compose build"
 3. Run "docker-compose up"
