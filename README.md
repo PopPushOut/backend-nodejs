@@ -25,7 +25,7 @@ Node.js server will start on https://localhost:3000
 
 **Scheduling**
 
-To achieve scheduling and take some load from the "Mainframe" transaction processing [Agenda library was used][2]
+To achieve scheduling to take load from the "Mainframe" transaction processing [Agenda library was used][2]
 
 There are 4 Jobs running, 2 of them running every 15 minutes and rest running every 1 hour.
 List of Jobs ordered from highest to lowest priority:
