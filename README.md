@@ -1,7 +1,7 @@
 *Teltonika nodejs entry task - All fragile information like secrets, credentials, keys are exposed on purpose!*
 
-# how to start (2 methods)
-**method 1**
+# Running the Project
+**Without Docker (standard)**
 
 *prerequisites: Node.js(version 10.x or higher recommended) installed*
 
@@ -10,7 +10,9 @@ Steps to run:
 2. Run "npm install"
 3. Run "npm start"
 
-**method 2**
+Node.js server will start on https://localhost:3000
+
+**With Docker**
 
 *prerequisites: Docker installed*
 
@@ -25,7 +27,7 @@ Node.js server will start on https://localhost:3000
 
 **Scheduling**
 
-To achieve scheduling to take load from the "Mainframe" transaction processing [Agenda library was used][2]
+To achieve scheduling of transaction processing [Agenda library was used][2]
 
 There are 4 Jobs running, 2 of them running every 15 minutes and rest running every 1 hour.
 List of Jobs ordered from highest to lowest priority:
@@ -35,9 +37,10 @@ List of Jobs ordered from highest to lowest priority:
 3. Domestic transactions(e.g LT-LT) from users with importance [6-10] processing (every 1 hour)
 4. International transactions (e.g EN-LT) from users with importance [6-10] processing (every 1 hour)
 
-**Experimental Views**
+**Basic Front-End Views**
 
-Endpoints /register and /login can be accessed via browser, rendered html view could be used to make some dirty testing.
+Endpoints /register and /login can be accessed via browser.
+
 Both /register and /login returns token, which can be used to access other resources.
 
 **API Documentation**
