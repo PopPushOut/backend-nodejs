@@ -1,4 +1,5 @@
 *Teltonika nodejs entry task*
+All fragile information like secrets, credentials, keys are exposed on purpose!
 
 # how to start (2 methods)
 **method 1**
