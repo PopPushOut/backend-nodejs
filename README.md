@@ -37,16 +37,28 @@ List of Jobs ordered from highest to lowest priority:
 3. Domestic transactions(e.g LT-LT) from users with importance [6-10] processing (every 1 hour)
 4. International transactions (e.g EN-LT) from users with importance [6-10] processing (every 1 hour)
 
-**Basic Front-End Views**
-
-Endpoints /register and /login can be accessed via browser.
-
-Both /register and /login returns token, which can be used to access other resources.
-
 **API Documentation**
 
 Link below opens API docs, provided collection can be run directly in Postman desktop client.
 [API Documentation generated using Postman][1]
+
+*To run provided collection with Postman, desktop client is required.*
+
+**Basic Front-End Views**
+
+Endpoints /register and /login can be accessed via browser.
+
+*/register view*
+
+![](public/images/Register.png)
+
+*/login view*
+
+![](public/images/Login.png)
+
+Both /register and /login returns token, which can be used to access other resources.
+
+![](public/images/Token.png)
 
 [1]: https://documenter.getpostman.com/view/2783029/SztBa7ga?version=latest "API Documentation"
 [2]: https://github.com/agenda/agenda "Git Library for managing jobs"
